@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{.Title}}</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    body { margin: 0; padding: 24px; background: #0b1220; color: #e6eefc; }
+    a { color: #9bdcff; text-decoration: none; }
+    .wrap { max-width: 980px; margin: 0 auto; }
+    .card { background: #111a2e; border: 1px solid rgba(255,255,255,.08); border-radius: 14px; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    .row { display: grid; gap: 12px; grid-template-columns: 1fr 1fr; }
+    @media (max-width: 880px) { .row { grid-template-columns: 1fr; } }
+    .top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
+    .badge { font-size: 12px; opacity: .8; border: 1px solid rgba(255,255,255,.15); padding: 4px 8px; border-radius: 999px; }
+    .tabs { display: flex; gap: 8px; margin: 14px 0; }
+    .tab { display:inline-block; padding: 8px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,.12); }
+    .tab.active { background: rgba(155,220,255,.12); border-color: rgba(155,220,255,.35); }
+    label { display:block; font-size: 13px; opacity: .9; margin-bottom: 6px; }
+    input { width: 100%; box-sizing: border-box; padding: 10px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,.12); background: #0c1427; color: #e6eefc; outline: none; }
+    input:focus { border-color: rgba(155,220,255,.55); }
+    .hint { font-size: 12px; opacity: .75; margin-top: 6px; }
+    .btn { cursor: pointer; margin-top: 10px; padding: 10px 12px; border-radius: 12px; border: 1px solid rgba(155,220,255,.35); background: rgba(155,220,255,.12); color: #e6eefc; font-weight: 600; }
+    .err { margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: rgba(255,90,90,.12); border: 1px solid rgba(255,90,90,.35); }
+    .ok  { margin-top: 12px; padding: 10px 12px; border-radius: 12px; background: rgba(90,255,170,.10); border: 1px solid rgba(90,255,170,.25); }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { text-align: left; padding: 8px; border-bottom: 1px solid rgba(255,255,255,.08); font-size: 14px; }
+    th { font-size: 13px; opacity: .85; }
+    .muted { opacity: .75; }
+    .footer { margin-top: 14px; font-size: 12px; opacity: .65; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1 style="margin:0;font-size:22px;">{{.Title}}</h1>
+    <div class="badge">{{.Version}}</div>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <a class="tab {{if eq .Mode "1"}}active{{end}}" href="/?mode=1">Завдання 1</a>
+      <a class="tab {{if eq .Mode "2"}}active{{end}}" href="/?mode=2">Завдання 2 (мазут)</a>
+    </div>
+
+    <form method="post" action="/calculate">
+      <input type="hidden" name="mode" value="{{.Mode}}"/>
+
+      {{if eq .Mode "1"}}
+        <div class="row">
+          <div>
+            <label>H, %</label>
+            <input name="H" value="{{index .Values "H"}}" placeholder="Напр. 3.2">
+          </div>
+          <div>
+            <label>C, %</label>
+            <input name="C" value="{{index .Values "C"}}" placeholder="Напр. 78.5">
+          </div>
+          <div>
+            <label>S, %</label>
+            <input name="S" value="{{index .Values "S"}}" placeholder="Напр. 1.1">
+          </div>
+          <div>
+            <label>N, %</label>
+            <input name="N" value="{{index .Values "N"}}" placeholder="Напр. 0.8">
+          </div>
+          <div>
+            <label>O, %</label>
+            <input name="O" value="{{index .Values "O"}}" placeholder="Напр. 6.4">
+          </div>
+          <div>
+            <label>W (волога), %</label>
+            <input name="W" value="{{index .Values "W"}}" placeholder="Напр. 12">
+          </div>
+          <div>
+            <label>A (зола), %</label>
+            <input name="A" value="{{index .Values "A"}}" placeholder="Напр. 8">
+            <div class="hint">Дозволено десяткові крапка/кома.</div>
+          </div>
+        </div>
+      {{else}}
+        <div class="row">
+          <div>
+            <label>H, %</label>
+            <input name="H" value="{{index .Values "H"}}" placeholder="Напр. 11.2">
+          </div>
+          <div>
+            <label>C, %</label>
+            <input name="C" value="{{index .Values "C"}}" placeholder="Напр. 85.0">
+          </div>
+          <div>
+            <label>S, %</label>
+            <input name="S" value="{{index .Values "S"}}" placeholder="Напр. 2.5">
+          </div>
+          <div>
+            <label>O, %</label>
+            <input name="O" value="{{index .Values "O"}}" placeholder="Напр. 0.8">
+          </div>
+          <div>
+            <label>W (вологість робочої маси), %</label>
+            <input name="W" value="{{index .Values "W"}}" placeholder="Напр. 2">
+          </div>
+          <div>
+            <label>A (зольність сухої маси), %</label>
+            <input name="A" value="{{index .Values "A"}}" placeholder="Напр. 0.15">
+          </div>
+          <div>
+            <label>V (ванадій), мг/кг</label>
+            <input name="V" value="{{index .Values "V"}}" placeholder="Напр. 220">
+          </div>
+          <div>
+            <label>Qг (нижча теплота згоряння горючої маси), МДж/кг</label>
+            <input name="Qg" value="{{index .Values "Qg"}}" placeholder="Напр. 40.2">
+          </div>
+        </div>
+      {{end}}
+
+      <button class="btn" type="submit">Розрахувати</button>
+    </form>
+
+    {{if .Error}}
+      <div class="err"><b>Помилка:</b> {{.Error}}</div>
+    {{end}}
+
+    {{if .Result}}
+      <div class="ok">
+        <b>Результати</b>
+        {{if eq .Mode "1"}}
+          <table>
+            <tr><th colspan="2">Коефіцієнти</th></tr>
+            <tr><td>КРС</td><td>{{printf "%.4f" .Result.KRS}}</td></tr>
+            <tr><td>КРГ</td><td>{{printf "%.4f" .Result.KRG}}</td></tr>
+
+            <tr><th colspan="2">Суха маса, %</th></tr>
+            <tr><td>H</td><td>{{printf "%.2f" .Result.HS}}</td></tr>
+            <tr><td>C</td><td>{{printf "%.2f" .Result.CS}}</td></tr>
+            <tr><td>S</td><td>{{printf "%.2f" .Result.SS}}</td></tr>
+            <tr><td>N</td><td>{{printf "%.2f" .Result.NS}}</td></tr>
+            <tr><td>O</td><td>{{printf "%.2f" .Result.OS}}</td></tr>
+            <tr><td>A</td><td>{{printf "%.2f" .Result.AS}}</td></tr>
+
+            <tr><th colspan="2">Горюча маса, %</th></tr>
+            <tr><td>H</td><td>{{printf "%.2f" .Result.HG}}</td></tr>
+            <tr><td>C</td><td>{{printf "%.2f" .Result.CG}}</td></tr>
+            <tr><td>S</td><td>{{printf "%.2f" .Result.SG}}</td></tr>
+            <tr><td>N</td><td>{{printf "%.2f" .Result.NG}}</td></tr>
+            <tr><td>O</td><td>{{printf "%.2f" .Result.OG}}</td></tr>
+
+            <tr><th colspan="2">Нижча теплота згоряння, МДж/кг</th></tr>
+            <tr><td>Qрн (робоча)</td><td>{{printf "%.4f" .Result.QrMJ}}</td></tr>
+            <tr><td>Qсн (суха)</td><td>{{printf "%.4f" .Result.QsMJ}}</td></tr>
+            <tr><td>Qгн (горюча)</td><td>{{printf "%.4f" .Result.QgMJ}}</td></tr>
+          </table>
+        {{else}}
+          <table>
+            <tr><th colspan="2">Коефіцієнт</th></tr>
+            <tr><td>КГР</td><td>{{printf "%.4f" .Result.KGR}}</td></tr>
+
+            <tr><th colspan="2">Робоча маса</th></tr>
+            <tr><td>H, %</td><td>{{printf "%.2f" .Result.HR}}</td></tr>
+            <tr><td>C, %</td><td>{{printf "%.2f" .Result.CR}}</td></tr>
+            <tr><td>S, %</td><td>{{printf "%.2f" .Result.SR}}</td></tr>
+            <tr><td>O, %</td><td>{{printf "%.2f" .Result.OR}}</td></tr>
+            <tr><td>A, %</td><td>{{printf "%.2f" .Result.AR}}</td></tr>
+            <tr><td>V, мг/кг</td><td>{{printf "%.2f" .Result.VRmg}}</td></tr>
+
+            <tr><th colspan="2">Нижча теплота згоряння робочої маси</th></tr>
+            <tr><td>Qрн, МДж/кг</td><td>{{printf "%.4f" .Result.Qr2MJ}}</td></tr>
+          </table>
+        {{end}}
+        <div class="footer muted">Порада: можна вводити десяткові значення з комою або крапкою.</div>
+      </div>
+    {{end}}
+  </div>
+</div>
+</body>
+</html>
